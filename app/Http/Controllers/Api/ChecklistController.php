@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\Checklist;
-
+use App\Http\Requests\Api\ChecklistCreateRequest;
 class ChecklistController extends BaseController
 {
     /**
@@ -15,10 +15,10 @@ class ChecklistController extends BaseController
      */
     public function index()
     {
-        $products = Checklist::all();
+        $checklist = Checklist::all();
 
 
-        return $this->sendResponse($products->toArray(), 'Products retrieved successfully.');
+        return $this->sendResponse($checklist->toArray(), '$checklist retrieved successfully.');
     }
 
 
@@ -28,15 +28,15 @@ class ChecklistController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ChecklistCreateRequest $request)
     {
         $input = $request->all();
 
 
-        $product = Product::create($input);
+        $checklist = Checklist::create($input);
 
 
-        return $this->sendResponse($product->toArray(), 'Product created successfully.');
+        return $this->sendResponse($checklist->toArray(), '$checklist created successfully.');
     }
 
 
@@ -48,15 +48,15 @@ class ChecklistController extends BaseController
      */
     public function show($id)
     {
-        $product = Product::find($id);
+        $checklist = Checklist::find($id);
 
 
-        if (is_null($product)) {
-            return $this->sendError('Product not found.');
+        if (is_null($checklist)) {
+            return $this->sendError('$checklist not found.');
         }
 
 
-        return $this->sendResponse($product->toArray(), 'Product retrieved successfully.');
+        return $this->sendResponse($checklist->toArray(), '$checklist retrieved successfully.');
     }
 
 
@@ -67,28 +67,17 @@ class ChecklistController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(ChecklistCreateRequest $request, Checklist $checklist)
     {
         $input = $request->all();
 
 
-        $validator = Validator::make($input, [
-            'name' => 'required',
-            'detail' => 'required'
-        ]);
+        $checklist->name = $input['name'];
+        $checklist->detail = $input['detail'];
+        $checklist->save();
 
 
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());
-        }
-
-
-        $product->name = $input['name'];
-        $product->detail = $input['detail'];
-        $product->save();
-
-
-        return $this->sendResponse($product->toArray(), 'Product updated successfully.');
+        return $this->sendResponse($checklist->toArray(), '$checklist updated successfully.');
     }
 
 
@@ -98,11 +87,11 @@ class ChecklistController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy(Checklist $checklist)
     {
-        $product->delete();
+        $checklist->delete();
 
 
-        return $this->sendResponse($product->toArray(), 'Product deleted successfully.');
+        return $this->sendResponse($product->toArray(), '$checklist deleted successfully.');
     }
 }

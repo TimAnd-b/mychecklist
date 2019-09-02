@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\Listitem;
+use App\Http\Requests\Api\ListitemCreateRequest;
 
 class ListitemController extends BaseController
 {
@@ -15,10 +16,10 @@ class ListitemController extends BaseController
      */
     public function index()
     {
-        $products = Listitem::all();
+        $listitem = Listitem::all();
 
 
-        return $this->sendResponse($products->toArray(), 'Products retrieved successfully.');
+        return $this->sendResponse($listitem->toArray(), '$listitem retrieved successfully.');
     }
 
 
@@ -28,26 +29,15 @@ class ListitemController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ListitemCreateRequest $request)
     {
         $input = $request->all();
 
 
-        $validator = Validator::make($input, [
-            'name' => 'required',
-            'detail' => 'required'
-        ]);
+        $listitem = Listitem::create($input);
 
 
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());
-        }
-
-
-        $product = Product::create($input);
-
-
-        return $this->sendResponse($product->toArray(), 'Product created successfully.');
+        return $this->sendResponse($listitem->toArray(), '$listitem created successfully.');
     }
 
 
@@ -59,15 +49,15 @@ class ListitemController extends BaseController
      */
     public function show($id)
     {
-        $product = Product::find($id);
+        $listitem = Listitem::find($id);
 
 
-        if (is_null($product)) {
-            return $this->sendError('Product not found.');
+        if (is_null($listitem)) {
+            return $this->sendError('$listitem not found.');
         }
 
 
-        return $this->sendResponse($product->toArray(), 'Product retrieved successfully.');
+        return $this->sendResponse($listitem->toArray(), '$listitem retrieved successfully.');
     }
 
 
@@ -78,28 +68,17 @@ class ListitemController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(ListitemCreateRequest $request, Listitem $listitem)
     {
         $input = $request->all();
 
 
-        $validator = Validator::make($input, [
-            'name' => 'required',
-            'detail' => 'required'
-        ]);
+        $listitem->name = $input['name'];
+        $listitem->detail = $input['detail'];
+        $listitem->save();
 
 
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());
-        }
-
-
-        $product->name = $input['name'];
-        $product->detail = $input['detail'];
-        $product->save();
-
-
-        return $this->sendResponse($product->toArray(), 'Product updated successfully.');
+        return $this->sendResponse($listitem->toArray(), '$listitem updated successfully.');
     }
 
 
@@ -109,11 +88,11 @@ class ListitemController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy(Listitem $listitem)
     {
-        $product->delete();
+        $listitem->delete();
 
 
-        return $this->sendResponse($product->toArray(), 'Product deleted successfully.');
+        return $this->sendResponse($listitem->toArray(), '$listitem deleted successfully.');
     }
 }
