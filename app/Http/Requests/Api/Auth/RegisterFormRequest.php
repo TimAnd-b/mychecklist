@@ -30,11 +30,11 @@ class RegisterFormRequest extends FormRequest
         ];
     }
 
-//    public function messages()
-//    {
-//        return [
-//            'required' => 'Hey! You have to fill in the :attribute field.',
-//            'password.confirmed' => 'Пароли не совпадают'
-//        ];
-//    }
+    public function messages()
+    {
+        return [
+            'required' => ':attribute это поле обязательно.',
+            'password.confirmed' => 'Пароли не совпадают'
+        ];
+    }
 }
