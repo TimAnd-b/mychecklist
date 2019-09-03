@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\Checklist;
 use App\Http\Requests\Api\ChecklistCreateRequest;
+use App\Model\User;
+use Mockery\Exception;
+
 class ChecklistController extends BaseController
 {
     /**
@@ -13,12 +16,12 @@ class ChecklistController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $checklist = Checklist::all();
 
+        $checklist = $request->user()->checklists()->paginate(6);
 
-        return $this->sendResponse($checklist->toArray(), '$checklist retrieved successfully.');
+        return $this->sendResponse($checklist,'');
     }
 
 
@@ -30,13 +33,14 @@ class ChecklistController extends BaseController
      */
     public function store(ChecklistCreateRequest $request)
     {
-        $input = $request->all();
+        //$checklist = Checklist::create([]);
 
+        $checklist = $request->user()
+                            ->checklists()
+                            ->create(['user_id' => $request->user()->id,
+                                      'title' => $request->title]);
 
-        $checklist = Checklist::create($input);
-
-
-        return $this->sendResponse($checklist->toArray(), '$checklist created successfully.');
+        return $this->sendResponse($checklist->toArray(), 'checklist created successfully.');
     }
 
 
@@ -46,17 +50,13 @@ class ChecklistController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, Request $request)
     {
-        $checklist = Checklist::find($id);
-
-
+        $checklist = $request->user()->checklists()->find($id);
         if (is_null($checklist)) {
-            return $this->sendError('$checklist not found.');
+                return $this->sendError('checklist not found or empty.');
         }
-
-
-        return $this->sendResponse($checklist->toArray(), '$checklist retrieved successfully.');
+        return $this->sendResponse($checklist, '');
     }
 
 
@@ -67,17 +67,16 @@ class ChecklistController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ChecklistCreateRequest $request, Checklist $checklist)
+    public function update($id, ChecklistCreateRequest $request, Checklist $checklist)
     {
-        $input = $request->all();
 
+        $checklist = $request->user()->checklists()->find($id);
+        $checklist->title = $request['title'];
 
-        $checklist->name = $input['name'];
-        $checklist->detail = $input['detail'];
         $checklist->save();
 
 
-        return $this->sendResponse($checklist->toArray(), '$checklist updated successfully.');
+        return $this->sendResponse($checklist, 'checklist updated successfully.');
     }
 
 
@@ -87,11 +86,13 @@ class ChecklistController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Checklist $checklist)
+    public function destroy($id, Request $request)
     {
-        $checklist->delete();
-
-
-        return $this->sendResponse($product->toArray(), '$checklist deleted successfully.');
+        $checklist = $request->user()->checklists()->find($id);
+        if (is_null($checklist)) {
+            return $this->sendError('checklist not found.');
+        }
+        $checklist -> delete();
+        return $this->sendResponse('', 'checklist deleted successfully.');
     }
 }

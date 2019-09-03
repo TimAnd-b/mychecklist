@@ -11,6 +11,9 @@
 |
 */
 
-Route::get('/', function () {
+Route::get('/', function (\Illuminate\Http\Request $request) {
+    //$checklist = $request->user()->checklists()->paginate(6);
+
+    //return $this->sendResponse($checklist,'');
     return view('welcome');
 });

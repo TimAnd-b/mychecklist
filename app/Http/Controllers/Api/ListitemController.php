@@ -6,58 +6,41 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\Listitem;
 use App\Http\Requests\Api\ListitemCreateRequest;
+use App\Model\Checklist;
 
 class ListitemController extends BaseController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function index($list_id, Request $request)
     {
-        $listitem = Listitem::all();
+        $checklist = $request->user()->checklists()->find($list_id);
 
+        if (is_null($checklist)) {
+            return $this->sendError('checklist not found.');
+        }
 
-        return $this->sendResponse($listitem->toArray(), '$listitem retrieved successfully.');
+        $checklistItems = $checklist->listitems();
+
+        if (is_null($checklistItems)) {
+            return $this->sendError($checklist,'');
+        }
+
+        return $this->sendResponse($checklistItems->paginate(6),'');
     }
-
-
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ListitemCreateRequest $request)
+    public function store($list_id, ListitemCreateRequest $request)
     {
-        $input = $request->all();
 
+        $checklist = $request->user()
+            ->checklists()->find($list_id)->listitems()
+            ->create(['checklist_id' => $list_id,
+                'body' => $request->body]);
 
-        $listitem = Listitem::create($input);
-
-
-        return $this->sendResponse($listitem->toArray(), '$listitem created successfully.');
-    }
-
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $listitem = Listitem::find($id);
-
-
-        if (is_null($listitem)) {
-            return $this->sendError('$listitem not found.');
-        }
-
-
-        return $this->sendResponse($listitem->toArray(), '$listitem retrieved successfully.');
+        return $this->sendResponse($checklist, 'item created successfully.');
     }
 
 
@@ -68,17 +51,18 @@ class ListitemController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ListitemCreateRequest $request, Listitem $listitem)
+    public function update($list_id, $item_id, ListitemCreateRequest $request)
     {
-        $input = $request->all();
+        $checklist = $request->user()->checklists()->find($list_id);
+        $list_item = $checklist->listitems()->find($item_id);
+        $list_item->body = $request['body'];
+        if (isset($request['done']))
+            $list_item->done = $request['done'];
+
+        $list_item->save();
 
 
-        $listitem->name = $input['name'];
-        $listitem->detail = $input['detail'];
-        $listitem->save();
-
-
-        return $this->sendResponse($listitem->toArray(), '$listitem updated successfully.');
+        return $this->sendResponse($checklist, 'item updated successfully.');
     }
 
 
@@ -88,11 +72,14 @@ class ListitemController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Listitem $listitem)
+    public function destroy($list_id, $item_id, Request $request)
     {
-        $listitem->delete();
-
-
-        return $this->sendResponse($listitem->toArray(), '$listitem deleted successfully.');
+        $checklist = $request->user()->checklists()->find($list_id);
+        $list_item = $checklist->listitems()->find($item_id);
+        if (is_null($list_item)) {
+            return $this->sendError('item not found.');
+        }
+        $list_item -> delete();
+        return $this->sendResponse($checklist, 'checklist deleted successfully.');
     }
 }

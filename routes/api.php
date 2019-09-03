@@ -13,9 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+//Route::middleware('auth:api')->get('/user', function (Request $request) {
+//    return $request->user();
+//});
 
 Route::group(['namespace' => 'Api'], function () {
     Route::group(['namespace' => 'Auth'], function () {
@@ -23,4 +23,23 @@ Route::group(['namespace' => 'Api'], function () {
         Route::post('login', 'LoginController');
         Route::post('logout', 'LogoutController')->middleware('auth:api');
     });
+    Route::group(['middleware' => ['auth:api']], function () {
+        Route::get('checklists', 'ChecklistController@index');
+        Route::get('checklists/{id}', 'ChecklistController@show');
+        Route::post('checklists', 'ChecklistController@store');
+        Route::delete('checklists/{id}', 'ChecklistController@destroy');
+        Route::put('checklists/{id}', 'ChecklistController@update');
+
+        Route::get('checklists/{list_id}/listitems/', 'ListitemController@index');
+        Route::post('checklists/{list_id}/listitems/', 'ListitemController@store');
+        Route::delete('checklists/{list_id}/listitems/{item_id}', 'ListitemController@destroy');
+        Route::put('checklists/{list_id}/listitems/{item_id}', 'ListitemController@update');
+
+
+    });
+
 });
+
+
+
+
