@@ -12,6 +12,11 @@ class BaseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+//    public function __construct()
+//    {
+//        $this->middleware('isBanned');
+//    }
+
     public function sendResponse($result, $message)
     {
         $response = [

@@ -17,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email'
     ];
 
     /**
@@ -42,4 +42,12 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Model\Checklist');
     }
+
+    public function isBanned() {
+        if ($this->banned == true)
+            return true;
+        else
+            return false;
+    }
+
 }

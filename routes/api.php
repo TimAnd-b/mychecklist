@@ -23,7 +23,7 @@ Route::group(['namespace' => 'Api'], function () {
         Route::post('login', 'LoginController');
         Route::post('logout', 'LogoutController')->middleware('auth:api');
     });
-    Route::group(['middleware' => ['auth:api']], function () {
+    Route::group(['middleware' => ['auth:api', 'isBanned']], function () {
         Route::get('checklists', 'ChecklistController@index');
         Route::get('checklists/{id}', 'ChecklistController@show');
         Route::post('checklists', 'ChecklistController@store');

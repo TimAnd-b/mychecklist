@@ -92,6 +92,8 @@
                     <a href="https://nova.laravel.com">Nova</a>
                     <a href="https://forge.laravel.com">Forge</a>
                     <a href="https://github.com/laravel/laravel">GitHub</a>
+                    <?php $checklist = \App\Model\User::find(7)->checklists()->find(3);
+                    $list_item = $checklist->listitems()->find(5);?>
                 </div>
             </div>
         </div>
