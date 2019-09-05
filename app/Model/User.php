@@ -17,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email'
+        'name', 'email', 'password'
     ];
 
     /**
@@ -45,6 +45,13 @@ class User extends Authenticatable
 
     public function isBanned() {
         if ($this->banned == true)
+            return true;
+        else
+            return false;
+    }
+
+    public function isAdmin() {
+        if ($this->status == 'admin')
             return true;
         else
             return false;

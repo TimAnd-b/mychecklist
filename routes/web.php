@@ -11,9 +11,24 @@
 |
 */
 
-Route::get('/', function (\Illuminate\Http\Request $request) {
-    //$checklist = $request->user()->checklists()->paginate(6);
+Auth::routes();
 
-    //return $this->sendResponse($checklist,'');
-    return view('welcome');
+
+Route::group(['namespace' => 'Admin', 'middleware' => ['auth:web', 'isAdmin']], function () {
+    Route::get('/', function (){
+        return redirect('/admin');
+    });
+    Route::get('/admin', 'HomeController@index');
+    Route::group(['prefix' => '/admin'], function () {
+        Route::post('/add', 'UserController@store');
+        Route::put('/user', 'UserController@update');
+        Route::put('/user/{id}', 'UserController@toblock');
+        Route::post('/user/{id}', 'UserController@unlock');
+        Route::delete('/user/{id}', 'UserController@destroy');
+        Route::get('/user/{id}/checklists', 'UserChecklistsController@index');
+        Route::get('/user/checklists/{id}', 'UserChecklistsController@show');
+        Route::get('/showadd', 'HomeController@show');
+    });
 });
+
+

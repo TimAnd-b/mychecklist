@@ -34,8 +34,6 @@ Route::group(['namespace' => 'Api'], function () {
         Route::post('checklists/{list_id}/listitems/', 'ListitemController@store');
         Route::delete('checklists/{list_id}/listitems/{item_id}', 'ListitemController@destroy');
         Route::put('checklists/{list_id}/listitems/{item_id}', 'ListitemController@update');
-
-
     });
 
 });
