@@ -14,3 +14,6 @@ GET /api/checklists/{id}/listitems/{id}
 UPDATE /api/checklists/{id}/listitems/{id}
 DELETE /api/checklists/{id}/listitems/{id}
 PUT /api/checklists/{id}/listitems/{id}
+
+АДМИН ПАНЕЛЬ 
+/admin
